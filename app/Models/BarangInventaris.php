@@ -6,6 +6,7 @@ use App\Models\KategoriPemeliharaan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BarangInventaris extends Model
 {
@@ -27,6 +28,16 @@ class BarangInventaris extends Model
     public function kategori_pemeliharaan(): BelongsTo
     {
         return $this->belongsTo(KategoriPemeliharaan::class, 'id_kategori_pemeliharaan');
+    }
+
+    /**
+     * Get all of the gambar_pemeliharaan for the Pemeliharaan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pemeliharaan(): HasMany
+    {
+        return $this->hasMany(Pemeliharaan::class, 'id_pemeliharaan');
     }
 
 }
