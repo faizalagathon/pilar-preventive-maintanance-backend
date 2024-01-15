@@ -25,3 +25,5 @@ require __DIR__.'/kategori_pemeliharaan.php';
 
 require __DIR__ . '/pemeliharaan.php';
 require __DIR__ . '/gambar_pemeliharaan.php';
+
+require __DIR__ . '/daftar_pemeliharaan.php';
