@@ -9,6 +9,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 
+
 class PemeliharaanController extends Controller
 {
     /**
@@ -18,10 +19,9 @@ class PemeliharaanController extends Controller
     {
         $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
 
-        if($dataPemeliharaan->isEmpty()){
+        if ($dataPemeliharaan->isEmpty()) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
-        }
-        else{
+        } else {
             return PemeliharaanResource::collection($dataPemeliharaan);
         }
     }
@@ -50,10 +50,9 @@ class PemeliharaanController extends Controller
     {
         $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->where('id', $id)->first();
 
-        if($dataPemeliharaan == NULL){
+        if ($dataPemeliharaan == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
-        }
-        else{
+        } else {
             return new PemeliharaanResource($dataPemeliharaan);
         }
     }
@@ -79,13 +78,13 @@ class PemeliharaanController extends Controller
     {
         $dataPemeliharaan = Pemeliharaan::where('id', $id)->first();
 
-        if($dataPemeliharaan == NULL){
+        if ($dataPemeliharaan == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Kegiatan Pemeliharaan']);
-        }
-        else{
+        } else {
             $dataPemeliharaan->delete();
 
             return response()->json(['messages' => 'Data kegiatan Pemeliharaan berhasil di hapus']);
         }
     }
+
 }
