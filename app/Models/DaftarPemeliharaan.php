@@ -13,6 +13,8 @@ class DaftarPemeliharaan extends Model
     public $table = 'daftar_pemeliharaan';
     public $keyType = 'string';
     public $incrementing = false;
+    public $timestamps = false;
+
 
     protected $hidden = [
         'created_at', 'updated_at'
