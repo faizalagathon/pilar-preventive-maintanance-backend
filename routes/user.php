@@ -1,0 +1,10 @@
+<?php
+
+use App\Http\Controllers\UserController;
+
+Route::get('/user', [UserController::class, 'index']);
+Route::get('/user/{id}', [UserController::class, 'show']);
+Route::post('/user/tambah', [UserController::class, 'store']);
+Route::post('/user/edit/{id}', [UserController::class, 'update']);
+Route::delete('/user/hapus/{id}', [UserController::class, 'destroy']);
+

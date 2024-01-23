@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\KategoriPemeliharaan;
 use Illuminate\Database\Seeder;
+use Ramsey\Uuid\Uuid;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $categories = [
+            ['id' => Uuid::uuid4()->toString(), 'nama' => 'AC'],
+            ['id' => Uuid::uuid4()->toString(), 'nama' => 'Komputer'],
+            ['id' => Uuid::uuid4()->toString(), 'nama' => 'Printer'],
+        ];
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        KategoriPemeliharaan::insert($categories);
     }
 }
