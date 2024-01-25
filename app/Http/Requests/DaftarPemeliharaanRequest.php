@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class KegiatanPemeliharaanRequest extends FormRequest
+class DaftarPemeliharaanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,17 +22,19 @@ class KegiatanPemeliharaanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'id_kategori_pemeliharaan' => 'required|exists:kategori_pemeliharaan,id',
-            'nama_kegiatan' => 'required'
+            'id_pemeliharaan' => 'required|exists:pemeliharaan,id',
+            'id_kegiatan_pemeliharaan' => 'required|exists:kegiatan_pemeliharaan,id'
         ];
     }
-
+    // Pesan
     public function messages(): array
     {
         return [
-            // 'id_kategori_pemeliharaan.required' => 'Kategori Pemeliharaan di isi',
-            // 'id_kategori_pemeliharaan.exists' => 'tidak terdapat data Kategori Pemeliharaan tersebut',
-            'nama_kegiatan.required' => 'Nama kegiatan harus di isi'
+            'id_pemeliharaan.required' => ' Pemeliharaan di isi',
+            'id_pemeliharaan.exists' => 'tidak terdapat data Pemeliharaan tersebut',
+
+            'id_kegiatan_pemeliharaan.required' => 'Kegiatan Pemeliharaan di isi',
+            'id_kegiatan_pemeliharaan.exists' => 'tidak terdapat data Kegiatan Pemeliharaan tersebut'
         ];
     }
 }
