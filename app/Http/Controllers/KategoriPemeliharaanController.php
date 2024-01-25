@@ -16,6 +16,13 @@ class KategoriPemeliharaanController extends Controller
         return KategoriPemeliharaanResource::collection($dataKategoriPemeliharaan);
     }
 
+    public function count()
+    {
+        $kategoriCount = KategoriPemeliharaan::count();
+
+        return response()->json(['jumlah_kategori' => $kategoriCount]);
+    }
+
     public function store(KategoriPemeliharaanRequest $request){
         $dataKategoriPemeliharaan = new KategoriPemeliharaan();
         $uuidKategoriPemeliharaan = Uuid::uuid4()->toString();

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
 use App\Models\Pemeliharaan;
+use Carbon\Carbon;
 use DateTime;
+use DB;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 
@@ -23,6 +25,43 @@ class PemeliharaanController extends Controller
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
             return PemeliharaanResource::collection($dataPemeliharaan);
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function basedMonths()
+    {
+
+        $currentYear = Carbon::now()->year;
+
+        // Query untuk mengambil data Pemeliharaan dan mengelompokkannya berdasarkan bulan untuk tahun sekarang
+        $dataPemeliharaan = DB::table('pemeliharaan')
+            ->select(DB::raw('MONTH(tanggal) as bulan'), DB::raw('COUNT(*) as jumlah'))
+            ->whereYear('tanggal', $currentYear)
+            ->groupBy('bulan')
+            ->orderBy('bulan') // Menambahkan urutan berdasarkan bulan
+            ->get();
+
+        if ($dataPemeliharaan->isEmpty()) {
+            return response()->json([
+                ['bulan' => 1, 'jumlah' => 0],
+                // ['bulan' => 2, 'jumlah' => 0],
+                // ['bulan' => 3, 'jumlah' => 0],
+                // ['bulan' => 4, 'jumlah' => 0],
+                // ['bulan' => 5, 'jumlah' => 0],
+                // ['bulan' => 6, 'jumlah' => 0],
+                // ['bulan' => 7, 'jumlah' => 0],
+                // ['bulan' => 8, 'jumlah' => 0],
+                // ['bulan' => 9, 'jumlah' => 0],
+                // ['bulan' => 10, 'jumlah' => 0],
+                // ['bulan' => 11, 'jumlah' => 0],
+                // ['bulan' => 12, 'jumlah' => 0],
+            ]);
+        } else {
+            // return PemeliharaanResource::collection($dataPemeliharaan);
+            return response()->json($dataPemeliharaan);
         }
     }
 
