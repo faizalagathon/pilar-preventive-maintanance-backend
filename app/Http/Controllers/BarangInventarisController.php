@@ -40,7 +40,7 @@ class BarangInventarisController extends Controller
 
     public function show($id)
     {
-        $dataBarangInventaris = BarangInventaris::where('id', $id)->first();
+        $dataBarangInventaris = BarangInventaris::with('pemeliharaan')->where('id', $id)->first();
 
         if ($dataBarangInventaris == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Barang Inventaris']);
@@ -78,7 +78,7 @@ class BarangInventarisController extends Controller
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
-        $namaHost = '192.168.197.34'; /* Nanti tinggal diganti aja */
+        $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
 
         $url = 'http://' . $namaHost . ':8000/api/barang/show/';
 

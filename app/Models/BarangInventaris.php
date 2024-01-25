@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Pemeliharaan;
 use App\Models\KategoriPemeliharaan;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BarangInventaris extends Model
 {
@@ -14,7 +15,7 @@ class BarangInventaris extends Model
 
     public $table = 'barang_inventaris';
     public $incrementing = false;
-    public $keyType = false;
+    public $keyType = 'string';
 
     protected $fillable = [
         'id', 'id_kategori_pemeliharaan', 'nama'
@@ -37,7 +38,7 @@ class BarangInventaris extends Model
      */
     public function pemeliharaan(): HasMany
     {
-        return $this->hasMany(Pemeliharaan::class, 'id_pemeliharaan');
+        return $this->hasMany(Pemeliharaan::class, 'id_barang_inventaris');
     }
 
 }
