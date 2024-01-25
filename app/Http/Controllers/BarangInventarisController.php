@@ -25,9 +25,10 @@ class BarangInventarisController extends Controller
 
             // Mengubah hasil pengelompokkan menjadi bentuk yang sesuai dengan kebutuhan
             $groupedDataFormatted = $groupedData->map(function ($group, $kategori) {
+                $sortedData = $group->sortBy('nama');
                 return [
                     'nama_kategori' => $kategori,
-                    'data' => BarangInventarisResource::collection($group),
+                    'data' => BarangInventarisResource::collection($sortedData),
                 ];
             })->values();
 
