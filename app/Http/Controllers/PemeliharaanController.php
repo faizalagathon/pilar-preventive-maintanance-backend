@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
+use App\Models\DaftarPemeliharaan;
 use App\Models\Pemeliharaan;
 use Carbon\Carbon;
 use DateTime;
@@ -19,13 +20,29 @@ class PemeliharaanController extends Controller
      */
     public function index()
     {
-        $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
+        // $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
+
+        $dataPemeliharaan = DaftarPemeliharaan::with(['kegiatan_pemeliharaan','pemeliharaan'])->groupBy('pemeliharaan.id')->get();
 
         if ($dataPemeliharaan->isEmpty()) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
-            return PemeliharaanResource::collection($dataPemeliharaan);
+            // return PemeliharaanResource::collection($dataPemeliharaan);
+            return response()->json($dataPemeliharaan);
         }
+
+        // [
+        //     {
+        //         'id_pemeliharaan': '',
+        //         'kegiatan': [
+        //             'nama_kegiatan':'',
+        //             'nama_kegiatan':'',
+        //             'nama_kegiatan':'',
+        //         ],
+        //         'catatan': '',
+        //         'tanggal': '',
+        //     }
+        // ]
     }
 
     /**

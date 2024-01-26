@@ -21,12 +21,13 @@ class BarangInventarisController extends Controller
             return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
         } else {
             // Mengelompokkan data berdasarkan kategori
-            $groupedData = $dataBarangInventaris->groupBy('kategori_pemeliharaan.nama');
+            $groupedData = $dataBarangInventaris->groupBy('kategori_pemeliharaan');
 
             // Mengubah hasil pengelompokkan menjadi bentuk yang sesuai dengan kebutuhan
             $groupedDataFormatted = $groupedData->map(function ($group, $kategori) {
                 return [
-                    'nama_kategori' => $kategori,
+                    'id_kategori' => json_decode($kategori)->id,
+                    'nama_kategori' => json_decode($kategori)->nama,
                     'data' => BarangInventarisResource::collection($group),
                 ];
             })->values();
@@ -35,6 +36,17 @@ class BarangInventarisController extends Controller
         }
     }
 
+    public function withoutKategori() {
+
+        // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
+        $dataBarangInventaris = BarangInventaris::orderBy('nama')->get(['id', 'nama']);
+
+        if ($dataBarangInventaris->isEmpty()) {
+            return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
+        } else {
+            return response()->json($dataBarangInventaris);
+        }
+    }
 
     public function count()
     {
