@@ -100,14 +100,14 @@ class UserController extends Controller
     {
         //
         try {
-            $user = User::find($id);
+            $user = User::where('id', $id)->first();
             if (!$user) {
                 return response()->json([
                     'message' => 'user Tidak Ditemukan'
                 ], 404);
             }
             $user->username = $request->username;
-            $user->password = Hash::make($request->password);
+            // $user->password = Hash::make($request->password);
             $user->role = $request->role;
             $user->save();
             return response()->json(['messages' => 'user berhasil Diubah'], 200);

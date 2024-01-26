@@ -32,9 +32,9 @@ class UserRequest extends FormRequest
             ];
         }else{
             return [
-                'id' => Str::uuid(),
-                'username'=>'required|string|max:255|unique:user,username',
-                'password' => 'required|string|max:255',
+                // 'id' => Str::uuid(),
+                'username'=>'required|string|max:255|unique:user,username,' . request('id'),
+                // 'password' => 'required|string|max:255',
                 'role'=>'required'
             ];
         }
