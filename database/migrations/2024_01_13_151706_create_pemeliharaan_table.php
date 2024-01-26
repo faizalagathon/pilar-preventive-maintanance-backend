@@ -18,9 +18,7 @@ return new class extends Migration
             $table->text('catatan')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_barang_inventaris')->references('id')->on('barang_inventaris')
-            // ->onDelete('cascade')
-            ;
+            $table->foreign('id_barang_inventaris')->references('id')->on('barang_inventaris')->onDelete('cascade');
         });
     }
 

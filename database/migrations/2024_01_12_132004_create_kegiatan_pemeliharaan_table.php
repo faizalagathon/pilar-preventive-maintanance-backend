@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('kegiatan_pemeliharaan', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('id_kategori_pemeliharaan');
-            $table->foreign('id_kategori_pemeliharaan')->references('id')->on('kategori_pemeliharaan');
+            $table->foreign('id_kategori_pemeliharaan')->references('id')->on('kategori_pemeliharaan')->onDelete('cascade');;
             $table->string('nama_kegiatan');
             $table->timestamps();
         });

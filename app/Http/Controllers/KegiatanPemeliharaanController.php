@@ -10,8 +10,10 @@ use App\Http\Resources\KegiatanPemeliharaanResource;
 
 class KegiatanPemeliharaanController extends Controller
 {
-    public function index(){
-        $dataKegiatanPemeliharaan = KegiatanPemeliharaan::with('kategori_pemeliharaan')->get();
+    public function index($id){
+        // id merupakan id kategori
+
+        $dataKegiatanPemeliharaan = KegiatanPemeliharaan::with('kategori_pemeliharaan')->where('id_kategori_pemeliharaan', $id)->get();
 
         if($dataKegiatanPemeliharaan->isEmpty()){
             return response()->json(['messages' => 'Tidak terdapat data Kegiatan']);
@@ -47,11 +49,11 @@ class KegiatanPemeliharaanController extends Controller
     public function update(KegiatanPemeliharaanRequest $request, $id){
         $dataKegiatanPemeliharaan = KegiatanPemeliharaan::where('id', $id)->first();
 
-        $dataKegiatanPemeliharaan->id_kategori_pemeliharaan = $request->id_kategori_pemeliharaan;
+        // $dataKegiatanPemeliharaan->id_kategori_pemeliharaan = $request->id_kategori_pemeliharaan;
         $dataKegiatanPemeliharaan->nama_kegiatan = $request->nama_kegiatan;
         $dataKegiatanPemeliharaan->save();
 
-        return response()->json(['messages' => 'Data Kegiatan baru berhasil di ubah']);
+        return response()->json(['messages' => 'Data Kegiatan berhasil di ubah']);
     }
 
     public function destroy($id){
@@ -62,7 +64,7 @@ class KegiatanPemeliharaanController extends Controller
         }
         else{
             $dataKegiatanPemeliharaan->delete();
-            
+
             return response()->json(['messages' => 'Data kegiatan berhasil di hapus']);
         }
     }

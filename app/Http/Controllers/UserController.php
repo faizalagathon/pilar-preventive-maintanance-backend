@@ -27,12 +27,11 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function count()
     {
-        //
+        $userCount = User::count();
+
+        return response()->json(['jumlah_user' => $userCount]);
     }
 
     /**
@@ -80,17 +79,8 @@ class UserController extends Controller
             ], 404);
         }
         return response()->json([
-            'user'=>$user
-        ],501);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-
+            'user' => $user
+        ], 501);
     }
 
     /**

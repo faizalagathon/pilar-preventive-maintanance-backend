@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('gambar');
 
             $table->foreign('id_pemeliharaan')->references('id')->on('pemeliharaan')
-            // ->onDelete('cascade')
+            ->onDelete('cascade')
             ;
         });
     }

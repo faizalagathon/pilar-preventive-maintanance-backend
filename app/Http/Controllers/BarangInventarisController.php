@@ -14,13 +14,34 @@ class BarangInventarisController extends Controller
 {
     public function index()
     {
+        // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
         $dataBarangInventaris = BarangInventaris::with('kategori_pemeliharaan')->get();
 
         if ($dataBarangInventaris->isEmpty()) {
             return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
         } else {
-            return BarangInventarisResource::collection($dataBarangInventaris);
+            // Mengelompokkan data berdasarkan kategori
+            $groupedData = $dataBarangInventaris->groupBy('kategori_pemeliharaan.nama');
+
+            // Mengubah hasil pengelompokkan menjadi bentuk yang sesuai dengan kebutuhan
+            $groupedDataFormatted = $groupedData->map(function ($group, $kategori) {
+                $sortedData = $group->sortBy('nama');
+                return [
+                    'nama_kategori' => $kategori,
+                    'data' => BarangInventarisResource::collection($sortedData),
+                ];
+            })->values();
+
+            return response()->json($groupedDataFormatted);
         }
+    }
+
+
+    public function count()
+    {
+        $barangCount = BarangInventaris::count();
+
+        return response()->json(['jumlah_barang' => $barangCount]);
     }
 
     public function store(BarangInventarisRequest $request)
@@ -40,7 +61,7 @@ class BarangInventarisController extends Controller
 
     public function show($id)
     {
-        $dataBarangInventaris = BarangInventaris::where('id', $id)->first();
+        $dataBarangInventaris = BarangInventaris::with('pemeliharaan')->where('id', $id)->first();
 
         if ($dataBarangInventaris == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Barang Inventaris']);
@@ -78,7 +99,7 @@ class BarangInventarisController extends Controller
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
-        $namaHost = '192.168.197.34'; /* Nanti tinggal diganti aja */
+        $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
 
         $url = 'http://' . $namaHost . ':8000/api/barang/show/';
 
