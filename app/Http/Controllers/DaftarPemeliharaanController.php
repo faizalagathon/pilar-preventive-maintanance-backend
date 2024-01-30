@@ -26,6 +26,15 @@ class DaftarPemeliharaanController extends Controller
     }
 
 
+    public function show ($id) {
+        $dataDaftarPemeliharaan = DaftarPemeliharaan::where('id_kegiatan_pemeliharaan', $id)->first();
+
+        $isExist = !empty($dataDaftarPemeliharaan);
+
+        // return response()->json(['messages' => $dataDaftarPemeliharaan]);
+        return response()->json(['messages' => $isExist]);
+    }
+
 
     /**
      * Store a newly created resource in storage.

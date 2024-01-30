@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
+use App\Models\DaftarPemeliharaan;
+use App\Models\GambarPemeliharaan;
 use App\Models\Pemeliharaan;
 use Carbon\Carbon;
-use DateTime;
+// use DateTime;
 use DB;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+// use Illuminate\Support\Facades\Storage;
+
 
 
 class PemeliharaanController extends Controller
@@ -68,16 +72,82 @@ class PemeliharaanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PemeliharaanRequest $request)
+    public function store(Request $request)
     {
+
+        // mencari berapa kualifikasi yang dimasukan
+        $keys = $request->request->keys();
+
+        $indexTerakhir = key(array_slice($keys, -1, 1, true));
+
+        // Mencocokkan pola angka dalam string
+        preg_match('/\d+/', $keys[$indexTerakhir], $arrayAngka);
+        // Mengambil angka dari hasil pencocokan
+        $jumlah = $arrayAngka[0];
+
+
+        $i = 1;
+        do {
+            $rules = [
+                "kegiatan_$i" => 'required',
+                "catatan" => 'required',
+                'gambar' => "required",
+                'gambar.*' => "required|mimes:jpeg,png,jpg|max:2048",
+            ];
+
+            $messages = [
+                "kegiatan_$i.required" => "Kegiatan $i harus diisi.",
+                "catatan.required" => "Catatan harus diisi.",
+                "gambar.required" => "File gambar diperlukan.",
+                "gambar.*.required" => "File gambar diperlukan.",
+                'gambar.*.mimes' => 'harus berformat JPEG, PNG, JPG',
+                "gambar.*.max" => "tidak boleh lebih dari 2 MB.",
+            ];
+
+            $i++;
+        } while ($i <= $jumlah);
+
+        $request->validate($rules, $messages);
+
+
         $uuidPemeliharaan = Uuid::uuid4()->toString();
 
         $dataPemeliharaan = new Pemeliharaan;
         $dataPemeliharaan->id = $uuidPemeliharaan;
         $dataPemeliharaan->id_barang_inventaris = $request->id_barang_inventaris;
-        $dataPemeliharaan->tanggal = new DateTime;
+        $dataPemeliharaan->tanggal = now();
         $dataPemeliharaan->catatan = $request->catatan;
-        $dataPemeliharaan->save();
+        // $dataPemeliharaan->save();
+
+
+        // memasukan multiple gambar pemeliharaan
+        $gambarFIles = $request->file('gambar');
+
+        foreach ($gambarFIles as $file) {
+            $gambar_nama_asli = $file->getClientOriginalName();
+            $gambar_nama = date('ymdhis') . '_' . $gambar_nama_asli;
+            $file->storeAs('public/gambar_pemeliharaan', $gambar_nama);
+
+            $uuidGambarPemeliharaan = Uuid::uuid4()->toString();
+            $gambarDaftarPemeliharaan = new GambarPemeliharaan;
+            $gambarDaftarPemeliharaan->id = $uuidGambarPemeliharaan;
+            $gambarDaftarPemeliharaan->id_pemeliharaan = $uuidPemeliharaan;
+            $gambarDaftarPemeliharaan->gambar = $gambar_nama;
+            // $gambarDaftarPemeliharaan->save();
+        }
+
+
+
+        // tambah daftar pemeliharaan ke DB sesuai yang dimasukan di inputan
+        for ($i = 1; $i <= $jumlah; $i++) {
+            $uuidDaftarPemeliharaan = Uuid::uuid4()->toString();
+
+            $dataDaftarPemeliharaan = new DaftarPemeliharaan;
+            $dataDaftarPemeliharaan->id = $uuidDaftarPemeliharaan;
+            $dataDaftarPemeliharaan->id_pemeliharaan = $uuidPemeliharaan;
+            $dataDaftarPemeliharaan->id_kegiatan_pemeliharaan = $request['kegiatan_' . $i];
+            // $dataDaftarPemeliharaan->save();
+        }
 
         return response()->json(['messages' => 'Data Pemeliharaan baru berhasil di tambahkan']);
     }
@@ -125,5 +195,4 @@ class PemeliharaanController extends Controller
             return response()->json(['messages' => 'Data kegiatan Pemeliharaan berhasil di hapus']);
         }
     }
-
 }
