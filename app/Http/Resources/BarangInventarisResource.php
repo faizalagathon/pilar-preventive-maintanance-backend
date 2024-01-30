@@ -18,7 +18,7 @@ class BarangInventarisResource extends JsonResource
         return [
             'id' => $this->id,
             'nama' => $this->nama,
-            'kategori_pemeliharaan' => $this->kategori_pemeliharaan,
+            // 'kategori_pemeliharaan' => $this->kategori_pemeliharaan,
             'pemeliharaan' => collect($this->pemeliharaan)->map(function($pemeliharaan) {
                 return [
                     'id' => $pemeliharaan->id,

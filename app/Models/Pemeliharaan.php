@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Pemeliharaan extends Model
 {
@@ -41,5 +42,15 @@ class Pemeliharaan extends Model
     public function gambar_pemeliharaan(): HasMany
     {
         return $this->hasMany(GambarPemeliharaan::class, 'id_pemeliharaan');
+    }
+
+    /**
+     * Get the daftar_pemeliharaan associated with the Pemeliharaan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function daftar_pemeliharaan(): HasMany
+    {
+        return $this->hasMany(DaftarPemeliharaan::class, 'id_pemeliharaan', 'id');
     }
 }
