@@ -23,6 +23,17 @@ class GambarPemeliharaanController extends Controller
         }
     }
 
+    public function show($gambar)
+    {
+        return Storage::get('/public/images/' . $gambar);
+        // if ($dataGambarPemeliharaan == []) {
+        //     return response()->json(['messages' => 'Tidak terdapat data Gambar']);
+        // } else {
+        //     return GambarPemeliharaanResource::collection($dataGambarPemeliharaan);
+        // }
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */

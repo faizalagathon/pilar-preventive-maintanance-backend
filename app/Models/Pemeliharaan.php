@@ -42,4 +42,9 @@ class Pemeliharaan extends Model
     {
         return $this->hasMany(GambarPemeliharaan::class, 'id_pemeliharaan');
     }
+
+    public function daftar_pemeliharaan(): HasMany
+    {
+        return $this->hasMany(DaftarPemeliharaan::class, 'id_pemeliharaan','id');
+    }
 }

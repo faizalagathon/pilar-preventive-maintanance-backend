@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
+use App\Models\DaftarPemeliharaan;
 use App\Models\Pemeliharaan;
 use Carbon\Carbon;
 use DateTime;
@@ -19,14 +20,63 @@ class PemeliharaanController extends Controller
      */
     public function index()
     {
+        // $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
+        $dataPemeliharaan = DaftarPemeliharaan::with(['kegiatan_pemeliharaan','pemeliharaan'])->get();
+
+        if ($dataPemeliharaan->isEmpty()) {
+            return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
+        } else {
+            // return PemeliharaanResource::collection($dataPemeliharaan);
+            return response()->json($dataPemeliharaan);
+        }
+    }
+
+    public function indexAdmin()
+    {
+        // $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
         $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
 
         if ($dataPemeliharaan->isEmpty()) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
-            return PemeliharaanResource::collection($dataPemeliharaan);
+            $dataPemeliharaan = $dataPemeliharaan->map(function($pemeliharaan){
+                return[
+                    'id' => $pemeliharaan->id,
+                    'nama_barang'=>$pemeliharaan->barang_inventaris->nama,
+                    'tanggal' => $pemeliharaan->tanggal
+                ];
+            });
+            // return PemeliharaanResource::collection($dataPemeliharaan);
+            return response()->json($dataPemeliharaan);
         }
     }
+
+    public function indexTeknisi()
+{
+    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])->get();
+
+    if ($dataPemeliharaan->isEmpty()) {
+        return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
+    } else {
+        $formattedData = $dataPemeliharaan->map(function ($pemeliharaan) {
+            $namaKegiatan = $pemeliharaan->daftar_pemeliharaan->map(function ($item) {
+                return [
+                    'kegiatan' => $item->kegiatan_pemeliharaan->nama_kegiatan,
+                ];
+            });
+
+            return [
+                'id_pemeliharaan' => $pemeliharaan->id,
+                'catatan' => $pemeliharaan->catatan,
+                'tanggal' => $pemeliharaan->tanggal,
+                'nama_kegiatan' => $namaKegiatan->toArray(),
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+}
+
 
     /**
      * Display a listing of the resource.
@@ -87,12 +137,23 @@ class PemeliharaanController extends Controller
      */
     public function show($id)
     {
-        $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->where('id', $id)->first();
+        $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris','gambar_pemeliharaan','daftar_pemeliharaan.kegiatan_pemeliharaan'])->where('id', $id)->first();
 
         if ($dataPemeliharaan == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
-            return new PemeliharaanResource($dataPemeliharaan);
+            $dataPemeliharaan = [
+                'nama_barang'=>$dataPemeliharaan->barang_inventaris->nama,
+                'tanggal'=>$dataPemeliharaan->tanggal,
+                'catatan'=>$dataPemeliharaan->catatan,
+                'daftar_kegiatan'=>$dataPemeliharaan->daftar_pemeliharaan->map(function ($daftarPemeliharaan){
+                    return [
+                        'nama_kegiatan' => $daftarPemeliharaan->kegiatan_pemeliharaan->nama_kegiatan,
+                    ];
+                }),
+                'daftar_gambar'=>$dataPemeliharaan->gambar_pemeliharaan->pluck('gambar'),
+            ];
+            return response()->json($dataPemeliharaan);
         }
     }
 
