@@ -124,9 +124,11 @@ class BarangInventarisController extends Controller
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
-        $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
+        // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
+        $namaHost = '192.10.9.68'; /* Nanti tinggal diganti aja */
+        $port = ':5173';
 
-        $url = 'http://' . $namaHost . ':8000/api/barang/show/';
+        $url = 'http://' . $namaHost . $port . ':5173/api/barang/show/';
 
         // Generate QR code data (customize based on your requirements)
         // $qrCodeData = $url . $uuidBarangInventaris . '.svg';
@@ -144,5 +146,20 @@ class BarangInventarisController extends Controller
         // dd(storage_path('app/public/qr_code/' . $uuidBarangInventaris . '.svg'));
         return Storage::get('/public/qr_code/' . $uuidBarangInventaris . '.svg');
         // return storage_path('app/public/qr_code/' . $uuidBarangInventaris . '.svg');
+    }
+
+
+    public function isQrCodeExists($idBarang){
+
+        $url = 'http://localhost:8000/storage/qr_code/' . $idBarang . '.svg';
+
+        if (file_exists($url)) {
+            // Gambar tersedia
+            return response()->json(['isExists' => true]);
+        } else {
+            // Gambar tidak tersedia
+            return response()->json(['isExists' => false]);
+        }
+
     }
 }

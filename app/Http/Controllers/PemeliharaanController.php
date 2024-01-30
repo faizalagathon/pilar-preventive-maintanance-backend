@@ -153,7 +153,7 @@ class PemeliharaanController extends Controller
         $dataPemeliharaan->id_barang_inventaris = $request->id_barang_inventaris;
         $dataPemeliharaan->tanggal = now();
         $dataPemeliharaan->catatan = $request->catatan;
-        // $dataPemeliharaan->save();
+        $dataPemeliharaan->save();
 
 
         // memasukan multiple gambar pemeliharaan
@@ -169,7 +169,7 @@ class PemeliharaanController extends Controller
             $gambarDaftarPemeliharaan->id = $uuidGambarPemeliharaan;
             $gambarDaftarPemeliharaan->id_pemeliharaan = $uuidPemeliharaan;
             $gambarDaftarPemeliharaan->gambar = $gambar_nama;
-            // $gambarDaftarPemeliharaan->save();
+            $gambarDaftarPemeliharaan->save();
         }
 
 
@@ -182,7 +182,7 @@ class PemeliharaanController extends Controller
             $dataDaftarPemeliharaan->id = $uuidDaftarPemeliharaan;
             $dataDaftarPemeliharaan->id_pemeliharaan = $uuidPemeliharaan;
             $dataDaftarPemeliharaan->id_kegiatan_pemeliharaan = $request['kegiatan_' . $i];
-            // $dataDaftarPemeliharaan->save();
+            $dataDaftarPemeliharaan->save();
         }
 
         return response()->json(['messages' => 'Data Pemeliharaan baru berhasil di tambahkan']);
@@ -200,6 +200,7 @@ class PemeliharaanController extends Controller
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
             $dataPemeliharaan = [
+                'id_barang' => $dataPemeliharaan->id_barang_inventaris,
                 'nama_barang' => $dataPemeliharaan->barang_inventaris->nama,
                 'tanggal' => $dataPemeliharaan->tanggal,
                 'catatan' => $dataPemeliharaan->catatan,
@@ -237,12 +238,12 @@ class PemeliharaanController extends Controller
      */
     public function destroy($id)
     {
-        $dataPemeliharaan = DaftarPemeliharaan::where('id_pemeliharaan', $id)->first();
+        $dataPemeliharaan = Pemeliharaan::where('id', $id)->first();
 
         if ($dataPemeliharaan == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Kegiatan Pemeliharaan']);
         } else {
-            // Pemeliharaan::where('id', $id)->first()->delete();
+            DaftarPemeliharaan::where('id_pemeliharaan', $id)->delete();
             $dataPemeliharaan->delete();
 
             return response()->json(['messages' => 'Data kegiatan Pemeliharaan berhasil di hapus']);
