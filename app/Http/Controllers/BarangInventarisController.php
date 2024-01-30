@@ -51,6 +51,17 @@ class BarangInventarisController extends Controller
         }
     }
 
+    public function basedKategori($idKategori){
+        // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
+        $dataBarangInventaris = BarangInventaris::where('id_kategori_pemeliharaan', $idKategori)->get(['id', 'nama']);
+
+        if ($dataBarangInventaris->isEmpty()) {
+            return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
+        } else {
+            return response()->json($dataBarangInventaris);
+        }
+    }
+
     public function count()
     {
         $barangCount = BarangInventaris::count();
