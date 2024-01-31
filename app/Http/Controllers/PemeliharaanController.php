@@ -12,6 +12,9 @@ use App\Models\DaftarPemeliharaan;
 use App\Models\GambarPemeliharaan;
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
+use App\Models\BarangInventaris;
+use App\Models\KegiatanPemeliharaan;
+
 // use Illuminate\Support\Facades\Storage;
 
 
