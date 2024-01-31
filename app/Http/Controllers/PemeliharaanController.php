@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use DB;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use App\Models\Pemeliharaan;
@@ -12,6 +11,8 @@ use App\Models\DaftarPemeliharaan;
 use App\Models\GambarPemeliharaan;
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
+use Illuminate\Support\Facades\DB;
+
 // use Illuminate\Support\Facades\Storage;
 
 
@@ -50,22 +51,49 @@ class PemeliharaanController extends Controller
 
     public function indexAdmin()
     {
+        // $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
         $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
 
         if ($dataPemeliharaan->isEmpty()) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
-            $dataPemeliharaan = $dataPemeliharaan->map(function ($pemeliharaan) {
-                return [
+            $dataPemeliharaan = $dataPemeliharaan->map(function($pemeliharaan){
+                return[
                     'id' => $pemeliharaan->id,
-                    'nama_barang' => $pemeliharaan->barang_inventaris->nama,
-                    'tanggal' => $pemeliharaan->tanggal,
+                    'nama_barang'=>$pemeliharaan->barang_inventaris->nama,
+                    'tanggal' => $pemeliharaan->tanggal
                 ];
             });
-
+            // return PemeliharaanResource::collection($dataPemeliharaan);
             return response()->json($dataPemeliharaan);
         }
     }
+
+    public function indexTeknisi()
+{
+    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])->get();
+
+    if ($dataPemeliharaan->isEmpty()) {
+        return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
+    } else {
+        $formattedData = $dataPemeliharaan->map(function ($pemeliharaan) {
+            $namaKegiatan = $pemeliharaan->daftar_pemeliharaan->map(function ($item) {
+                return [
+                    'kegiatan' => $item->kegiatan_pemeliharaan->nama_kegiatan,
+                ];
+            });
+
+            return [
+                'id_pemeliharaan' => $pemeliharaan->id,
+                'catatan' => $pemeliharaan->catatan,
+                'tanggal' => $pemeliharaan->tanggal,
+                'nama_kegiatan' => $namaKegiatan->toArray(),
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+}
 
 
     /**
