@@ -16,6 +16,12 @@ class KategoriPemeliharaanController extends Controller
         return KategoriPemeliharaanResource::collection($dataKategoriPemeliharaan);
     }
 
+    public function basedBarang($id){
+        $dataKategoriPemeliharaan = KategoriPemeliharaan::with('barang_inventaris')->get();
+
+        return response()->json(['data' => $dataKategoriPemeliharaan]);
+    }
+
     public function count()
     {
         $kategoriCount = KategoriPemeliharaan::count();

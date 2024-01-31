@@ -18,17 +18,19 @@ class BarangInventarisController extends Controller
         $dataBarangInventaris = BarangInventaris::with('kategori_pemeliharaan')->get();
 
         if ($dataBarangInventaris->isEmpty()) {
-            return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
+            return response()->json(['status' => false, 'messages' => 'Tidak ada data Barang Inventaris']);
         } else {
             // Mengelompokkan data berdasarkan kategori
-            $groupedData = $dataBarangInventaris->groupBy('kategori_pemeliharaan.nama');
+            $groupedData = $dataBarangInventaris->groupBy('kategori_pemeliharaan');
 
             // Mengubah hasil pengelompokkan menjadi bentuk yang sesuai dengan kebutuhan
             $groupedDataFormatted = $groupedData->map(function ($group, $kategori) {
                 $sortedData = $group->sortBy('nama');
                 return [
-                    'nama_kategori' => $kategori,
-                    'data' => BarangInventarisResource::collection($sortedData),
+                    'status' => true,
+                    'id_kategori' => json_decode($kategori)->id,
+                    'nama_kategori' => json_decode($kategori)->nama,
+                    'data' => BarangInventarisResource::collection($group),
                 ];
             })->values();
 
@@ -36,6 +38,29 @@ class BarangInventarisController extends Controller
         }
     }
 
+    public function withoutKategori()
+    {
+
+        // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
+        $dataBarangInventaris = BarangInventaris::orderBy('nama')->get(['id', 'nama']);
+
+        if ($dataBarangInventaris->isEmpty()) {
+            return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
+        } else {
+            return response()->json($dataBarangInventaris);
+        }
+    }
+
+    public function basedKategori($idKategori){
+        // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
+        $dataBarangInventaris = BarangInventaris::where('id_kategori_pemeliharaan', $idKategori)->get(['id', 'nama']);
+
+        if ($dataBarangInventaris->isEmpty()) {
+            return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
+        } else {
+            return response()->json($dataBarangInventaris);
+        }
+    }
 
     public function count()
     {
@@ -99,9 +124,11 @@ class BarangInventarisController extends Controller
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
-        $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
+        // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
+        $namaHost = '192.10.9.68'; /* Nanti tinggal diganti aja */
+        $port = ':5173';
 
-        $url = 'http://' . $namaHost . ':8000/api/barang/show/';
+        $url = 'http://' . $namaHost . $port . ':5173/api/barang/show/';
 
         // Generate QR code data (customize based on your requirements)
         // $qrCodeData = $url . $uuidBarangInventaris . '.svg';
@@ -119,5 +146,20 @@ class BarangInventarisController extends Controller
         // dd(storage_path('app/public/qr_code/' . $uuidBarangInventaris . '.svg'));
         return Storage::get('/public/qr_code/' . $uuidBarangInventaris . '.svg');
         // return storage_path('app/public/qr_code/' . $uuidBarangInventaris . '.svg');
+    }
+
+
+    public function isQrCodeExists($idBarang){
+
+        $url = 'http://localhost:8000/storage/qr_code/' . $idBarang . '.svg';
+
+        if (file_exists($url)) {
+            // Gambar tersedia
+            return response()->json(['isExists' => true]);
+        } else {
+            // Gambar tidak tersedia
+            return response()->json(['isExists' => false]);
+        }
+
     }
 }

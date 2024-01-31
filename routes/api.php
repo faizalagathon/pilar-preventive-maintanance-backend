@@ -23,8 +23,10 @@ require __DIR__.'/barang_inventaris.php';
 require __DIR__.'/kegiatan_pemeliharaan.php';
 require __DIR__.'/kategori_pemeliharaan.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/daftar_pemeliharaan.php';
 
 require __DIR__ . '/pemeliharaan.php';
+require __DIR__ . '/generate_qr_code.php';
 require __DIR__ . '/user.php';
 require __DIR__ . '/gambar_pemeliharaan.php';
 require __DIR__ . '/daftar_pemeliharaan.php';

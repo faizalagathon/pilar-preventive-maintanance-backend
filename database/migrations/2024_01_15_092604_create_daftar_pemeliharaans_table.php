@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('daftar_pemeliharaan', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->uuid("id_pemeliharaan");
-            $table->foreign('id_pemeliharaan')->references('id')->on('pemeliharaan');
+            $table->foreign('id_pemeliharaan')->references('id')->on('pemeliharaan')->onDelete('cascade');
             $table->uuid("id_kegiatan_pemeliharaan");
             $table->foreign('id_kegiatan_pemeliharaan')->references('id')->on('kegiatan_pemeliharaan');
         });
