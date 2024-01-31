@@ -51,7 +51,8 @@ class BarangInventarisController extends Controller
         }
     }
 
-    public function basedKategori($idKategori){
+    public function basedKategori($idKategori)
+    {
         // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
         $dataBarangInventaris = BarangInventaris::where('id_kategori_pemeliharaan', $idKategori)->get(['id', 'nama']);
 
@@ -91,7 +92,22 @@ class BarangInventarisController extends Controller
         if ($dataBarangInventaris == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Barang Inventaris']);
         } else {
-            return new BarangInventarisResource($dataBarangInventaris);
+
+            $dataBarangInventaris = [
+                'id' => $dataBarangInventaris->id,
+                'id_kategori_pemeliharaan' => $dataBarangInventaris->id_kategori_pemeliharaan,
+                'nama' => $dataBarangInventaris->nama,
+                'pemeliharaan' => $dataBarangInventaris->pemeliharaan
+                    ->map(function ($item) {
+                        return [
+                            "id" => $item->id,
+                            "tanggal" => $item->tanggal,
+                            "catatan" => $item->catatan
+                        ];
+                    }),
+            ];
+
+            return response()->json($dataBarangInventaris);
         }
     }
 
@@ -125,14 +141,11 @@ class BarangInventarisController extends Controller
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
         // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
-        $namaHost = '192.10.9.68'; /* Nanti tinggal diganti aja */
+        $namaHost = '10.10.10.155'; /* Nanti tinggal diganti aja */
         $port = ':5173';
 
-        $url = 'http://' . $namaHost . $port . ':5173/api/barang/show/';
-
         // Generate QR code data (customize based on your requirements)
-        // $qrCodeData = $url . $uuidBarangInventaris . '.svg';
-        $qrCodeData = $url . $uuidBarangInventaris;
+        $qrCodeData = 'http://' . $namaHost . $port . '/login/teknisi/' . $uuidBarangInventaris;
 
         // Generate and save the QR code image
         $qrCodePath = $uuidBarangInventaris . '.svg';
@@ -149,7 +162,8 @@ class BarangInventarisController extends Controller
     }
 
 
-    public function isQrCodeExists($idBarang){
+    public function isQrCodeExists($idBarang)
+    {
 
         $url = 'http://localhost:8000/storage/qr_code/' . $idBarang . '.svg';
 
