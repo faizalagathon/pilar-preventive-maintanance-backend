@@ -2,7 +2,8 @@
 use App\Http\Controllers\PemeliharaanController;
 
 Route::get('/pemeliharaan', [PemeliharaanController::class, 'index']);
-Route::get('/pemeliharaan/indexadmin', [PemeliharaanController::class, 'indexAdmin']);
+Route::get('/pemeliharaan/indexAdmin', [PemeliharaanController::class, 'indexAdmin']);
+Route::get('/pemeliharaan/indexTeknisi', [PemeliharaanController::class, 'indexTeknisi']);
 Route::get('/pemeliharaan/basedMonths', [PemeliharaanController::class, 'basedMonths']);
 Route::get('/pemeliharaan/show/{id}', [PemeliharaanController::class, 'show']);
 Route::post('/pemeliharaan/create/', [PemeliharaanController::class, 'store']);
