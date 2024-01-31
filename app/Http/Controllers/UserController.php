@@ -44,11 +44,11 @@ class UserController extends Controller
         // dd($request);
 
         try {
-            // $cari_user = User::where('username', $request->username)->count();
+            $cari_user = User::where('username', $request->username)->count();
 
-            // if ($cari_user > 0) {
-            //     return response()->json(['message' => 'Username sudah digunakan'], 500);
-            // }
+            if ($cari_user > 0) {
+                return response()->json(['message' => ['username' => 'Username sudah digunakan']], 500);
+            }
 
             User::create([
                 'id' => Str::uuid(),
@@ -89,21 +89,30 @@ class UserController extends Controller
     public function update(UserRequest $request, string $id)
     {
         //
-        try {
+        // try {
             $user = User::where('id', $id)->first();
             if (!$user) {
                 return response()->json([
                     'message' => 'user Tidak Ditemukan'
                 ], 404);
             }
+
+            $cari_user = User::where('username', $request->username)
+                             ->where('id', '!=', $id)
+                             ->count();
+
+            if ($cari_user > 0) {
+                return response()->json(['message' => ['username' => 'Username sudah digunakan']], 500);
+            }
+
             $user->username = $request->username;
             // $user->password = Hash::make($request->password);
             $user->role = $request->role;
             $user->save();
-            return response()->json(['messages' => 'user berhasil Diubah'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['messages' => 'Ada yang salah: ' . $e->getMessage()], 500);
-        }
+            return response()->json(['messages' => 'user berhasil Diubah'], 201);
+        // } catch (\Exception $e) {
+            // return response()->json(['messages' => 'Ada yang salah: ' . $e->getMessage()], 500);
+        // }
     }
 
     /**

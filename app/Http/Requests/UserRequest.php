@@ -26,14 +26,16 @@ class UserRequest extends FormRequest
         if(request()->isMethod('post')){
             return [
                 'id' => Str::uuid(),
-                'username'=>'required|string|max:255|unique:user,username',
+                // 'username'=>'required|string|max:255|unique:user,username',
+                'username'=>'required|string|max:255',
                 'password' => 'required|string|max:255',
                 'role'=>'required |string|max:255'
             ];
         }else{
             return [
                 // 'id' => Str::uuid(),
-                'username'=>'required|string|max:255|unique:user,username,' . request('id'),
+                // 'username'=>'required|string|max:255|unique:user,username,' . request('id'),
+                'username'=>'required|string|max:255',
                 // 'password' => 'required|string|max:255',
                 'role'=>'required'
             ];
@@ -44,7 +46,6 @@ class UserRequest extends FormRequest
     {
         return[
             'username.required' => 'Username harus diisi.',
-            'username.unique' => 'username telah digunakan.',
             'password.required' => 'Password harus diisi.',
             'username.string' => 'Username harus berupa teks.',
             'password.string' => 'Password harus berupa teks.',
