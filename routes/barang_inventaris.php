@@ -3,6 +3,8 @@
 use App\Http\Controllers\BarangInventarisController;
 
 Route::get('/barang', [BarangInventarisController::class, 'index']);
+Route::get('/barang/qr_code/isExists/{idBarang}', [BarangInventarisController::class, 'isQrCodeExists']);
+Route::get('/barang/basedKategori/{idKategori}', [BarangInventarisController::class, 'basedKategori']);
 Route::get('/barang/withoutKategori', [BarangInventarisController::class, 'withoutKategori']);
 Route::get('/barang/count', [BarangInventarisController::class, 'count']);
 Route::post('/barang/store', [BarangInventarisController::class, 'store']);

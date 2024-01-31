@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use DB;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use App\Models\Pemeliharaan;
@@ -14,6 +13,7 @@ use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
 use App\Models\BarangInventaris;
 use App\Models\KegiatanPemeliharaan;
+use Illuminate\Support\Facades\DB;
 
 // use Illuminate\Support\Facades\Storage;
 
@@ -53,22 +53,49 @@ class PemeliharaanController extends Controller
 
     public function indexAdmin()
     {
+        // $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
         $dataPemeliharaan = Pemeliharaan::with('barang_inventaris')->get();
 
         if ($dataPemeliharaan->isEmpty()) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
-            $dataPemeliharaan = $dataPemeliharaan->map(function ($pemeliharaan) {
-                return [
+            $dataPemeliharaan = $dataPemeliharaan->map(function($pemeliharaan){
+                return[
                     'id' => $pemeliharaan->id,
-                    'nama_barang' => $pemeliharaan->barang_inventaris->nama,
-                    'tanggal' => $pemeliharaan->tanggal,
+                    'nama_barang'=>$pemeliharaan->barang_inventaris->nama,
+                    'tanggal' => $pemeliharaan->tanggal
                 ];
             });
-
+            // return PemeliharaanResource::collection($dataPemeliharaan);
             return response()->json($dataPemeliharaan);
         }
     }
+
+    public function indexTeknisi()
+{
+    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])->get();
+
+    if ($dataPemeliharaan->isEmpty()) {
+        return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
+    } else {
+        $formattedData = $dataPemeliharaan->map(function ($pemeliharaan) {
+            $namaKegiatan = $pemeliharaan->daftar_pemeliharaan->map(function ($item) {
+                return [
+                    'kegiatan' => $item->kegiatan_pemeliharaan->nama_kegiatan,
+                ];
+            });
+
+            return [
+                'id_pemeliharaan' => $pemeliharaan->id,
+                'catatan' => $pemeliharaan->catatan,
+                'tanggal' => $pemeliharaan->tanggal,
+                'nama_kegiatan' => $namaKegiatan->toArray(),
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+}
 
 
     /**
@@ -156,7 +183,7 @@ class PemeliharaanController extends Controller
         $dataPemeliharaan->id_barang_inventaris = $request->id_barang_inventaris;
         $dataPemeliharaan->tanggal = now();
         $dataPemeliharaan->catatan = $request->catatan;
-        // $dataPemeliharaan->save();
+        $dataPemeliharaan->save();
 
 
         // memasukan multiple gambar pemeliharaan
@@ -172,7 +199,7 @@ class PemeliharaanController extends Controller
             $gambarDaftarPemeliharaan->id = $uuidGambarPemeliharaan;
             $gambarDaftarPemeliharaan->id_pemeliharaan = $uuidPemeliharaan;
             $gambarDaftarPemeliharaan->gambar = $gambar_nama;
-            // $gambarDaftarPemeliharaan->save();
+            $gambarDaftarPemeliharaan->save();
         }
 
 
@@ -185,7 +212,7 @@ class PemeliharaanController extends Controller
             $dataDaftarPemeliharaan->id = $uuidDaftarPemeliharaan;
             $dataDaftarPemeliharaan->id_pemeliharaan = $uuidPemeliharaan;
             $dataDaftarPemeliharaan->id_kegiatan_pemeliharaan = $request['kegiatan_' . $i];
-            // $dataDaftarPemeliharaan->save();
+            $dataDaftarPemeliharaan->save();
         }
 
         return response()->json(['messages' => 'Data Pemeliharaan baru berhasil di tambahkan']);
@@ -203,6 +230,7 @@ class PemeliharaanController extends Controller
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
             $dataPemeliharaan = [
+                'id_barang' => $dataPemeliharaan->id_barang_inventaris,
                 'nama_barang' => $dataPemeliharaan->barang_inventaris->nama,
                 'tanggal' => $dataPemeliharaan->tanggal,
                 'catatan' => $dataPemeliharaan->catatan,
@@ -240,12 +268,12 @@ class PemeliharaanController extends Controller
      */
     public function destroy($id)
     {
-        $dataPemeliharaan = DaftarPemeliharaan::where('id_pemeliharaan', $id)->first();
+        $dataPemeliharaan = Pemeliharaan::where('id', $id)->first();
 
         if ($dataPemeliharaan == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Kegiatan Pemeliharaan']);
         } else {
-            // Pemeliharaan::where('id', $id)->first()->delete();
+            DaftarPemeliharaan::where('id_pemeliharaan', $id)->delete();
             $dataPemeliharaan->delete();
 
             return response()->json(['messages' => 'Data kegiatan Pemeliharaan berhasil di hapus']);

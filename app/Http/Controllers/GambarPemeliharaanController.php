@@ -16,12 +16,34 @@ class GambarPemeliharaanController extends Controller
     public function index($id)
     {
         $dataGambarPemeliharaan = GambarPemeliharaan::with('pemeliharaan')->where('id_pemeliharaan', $id)->get();
+        // $dataGambarPemeliharaan->map(function ($item) {
+        //     dd($item->gambar);
+        // });
+        // dd(Storage::get('/public/gambar_pemeliharaan/' . $dataGambarPemeliharaan));
+
         if ($dataGambarPemeliharaan == []) {
             return response()->json(['messages' => 'Tidak terdapat data Gambar']);
         } else {
-            return GambarPemeliharaanResource::collection($dataGambarPemeliharaan);
+            $dataGambarPemeliharaan = $dataGambarPemeliharaan->map(function ($item) {
+                return [
+                    'gambar' => $item->gambar
+                ];
+            });
+
+            return response()->json($dataGambarPemeliharaan);
         }
     }
+
+    public function show($gambar)
+    {
+        return Storage::get('/public/images/' . $gambar);
+        // if ($dataGambarPemeliharaan == []) {
+        //     return response()->json(['messages' => 'Tidak terdapat data Gambar']);
+        // } else {
+        //     return GambarPemeliharaanResource::collection($dataGambarPemeliharaan);
+        // }
+    }
+
 
     /**
      * Store a newly created resource in storage.

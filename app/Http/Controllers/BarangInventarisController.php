@@ -51,6 +51,18 @@ class BarangInventarisController extends Controller
         }
     }
 
+    public function basedKategori($idKategori)
+    {
+        // Mendapatkan data Barang Inventaris dengan mengambil relasi kategori_pemeliharaan
+        $dataBarangInventaris = BarangInventaris::where('id_kategori_pemeliharaan', $idKategori)->get(['id', 'nama']);
+
+        if ($dataBarangInventaris->isEmpty()) {
+            return response()->json(['messages' => 'Tidak ada data Barang Inventaris']);
+        } else {
+            return response()->json($dataBarangInventaris);
+        }
+    }
+
     public function count()
     {
         $barangCount = BarangInventaris::count();
@@ -80,7 +92,22 @@ class BarangInventarisController extends Controller
         if ($dataBarangInventaris == NULL) {
             return response()->json(['messages' => 'Tidak terdapat data Barang Inventaris']);
         } else {
-            return new BarangInventarisResource($dataBarangInventaris);
+
+            $dataBarangInventaris = [
+                'id' => $dataBarangInventaris->id,
+                'id_kategori_pemeliharaan' => $dataBarangInventaris->id_kategori_pemeliharaan,
+                'nama' => $dataBarangInventaris->nama,
+                'pemeliharaan' => $dataBarangInventaris->pemeliharaan
+                    ->map(function ($item) {
+                        return [
+                            "id" => $item->id,
+                            "tanggal" => $item->tanggal,
+                            "catatan" => $item->catatan
+                        ];
+                    }),
+            ];
+
+            return response()->json($dataBarangInventaris);
         }
     }
 
@@ -113,13 +140,12 @@ class BarangInventarisController extends Controller
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
-        $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
-
-        $url = 'http://' . $namaHost . ':8000/api/barang/show/';
+        // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
+        $namaHost = '10.10.10.155'; /* Nanti tinggal diganti aja */
+        $port = ':5173';
 
         // Generate QR code data (customize based on your requirements)
-        // $qrCodeData = $url . $uuidBarangInventaris . '.svg';
-        $qrCodeData = $url . $uuidBarangInventaris;
+        $qrCodeData = 'http://' . $namaHost . $port . '/login/teknisi/' . $uuidBarangInventaris;
 
         // Generate and save the QR code image
         $qrCodePath = $uuidBarangInventaris . '.svg';
@@ -133,5 +159,21 @@ class BarangInventarisController extends Controller
         // dd(storage_path('app/public/qr_code/' . $uuidBarangInventaris . '.svg'));
         return Storage::get('/public/qr_code/' . $uuidBarangInventaris . '.svg');
         // return storage_path('app/public/qr_code/' . $uuidBarangInventaris . '.svg');
+    }
+
+
+    public function isQrCodeExists($idBarang)
+    {
+
+        $url = 'http://localhost:8000/storage/qr_code/' . $idBarang . '.svg';
+
+        if (file_exists($url)) {
+            // Gambar tersedia
+            return response()->json(['isExists' => true]);
+        } else {
+            // Gambar tidak tersedia
+            return response()->json(['isExists' => false]);
+        }
+
     }
 }
