@@ -10,13 +10,11 @@ use App\Models\User;
 class AuthController extends Controller
 {
     public function login(LoginRequest $request){
-        $dataUser = User::where('username', $request->username)
-                        ->first();
 
-        // $dataUser = User::all();
+        $dataUser = User::where('username', $request->username)->first();
 
-        if($dataUser == null){
-            return response()->json(['messages' => 'Tidak terdapat data yang cocok dengan username tersebut'], 401);
+        if(empty($dataUser)){
+            return response()->json(['messages' => ['username' => 'Tidak terdapat data yang cocok dengan username tersebut']], 203);
         }
         else{
             if (password_verify($request->password, $dataUser->password)) {
@@ -25,7 +23,7 @@ class AuthController extends Controller
                     'user' => new LoginResource($dataUser)
                 ], 200);
             } else {
-                return response()->json(['messages' => 'Tidak terdapat data yang cocok dengan password tersebut'], 401);
+                return response()->json(['messages' => 'Data User tidak cocok dengan password tersebut'], 203);
             }
         }
 

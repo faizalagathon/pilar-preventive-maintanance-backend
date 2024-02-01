@@ -183,6 +183,7 @@ class PemeliharaanController extends Controller
         $dataPemeliharaan->id_barang_inventaris = $request->id_barang_inventaris;
         $dataPemeliharaan->tanggal = now();
         $dataPemeliharaan->catatan = $request->catatan;
+        $dataPemeliharaan->pembuat_user = $request->pembuat_user;
         $dataPemeliharaan->save();
 
 
