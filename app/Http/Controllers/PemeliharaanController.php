@@ -94,9 +94,10 @@ class PemeliharaanController extends Controller
     }
 
 
-    public function indexTeknisi()
+    public function indexTeknisi($id)
 {
     $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])
+        ->where('id_barang_inventaris', $id)
         ->orderBy('created_at', 'desc') // Order by created_at in descending order
         ->get();
 
