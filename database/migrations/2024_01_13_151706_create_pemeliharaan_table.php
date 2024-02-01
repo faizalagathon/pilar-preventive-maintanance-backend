@@ -16,8 +16,10 @@ return new class extends Migration
             $table->uuid('id_barang_inventaris');
             $table->date('tanggal');
             $table->text('catatan')->nullable();
+            $table->uuid('pembuat_user');
             $table->timestamps();
 
+            $table->foreign('pembuat_user')->references('id')->on('user');
             $table->foreign('id_barang_inventaris')->references('id')->on('barang_inventaris')->onDelete('cascade');
         });
     }

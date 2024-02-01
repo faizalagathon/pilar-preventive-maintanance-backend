@@ -94,9 +94,12 @@ class PemeliharaanController extends Controller
     }
 
 
-    public function indexTeknisi()
+    public function indexTeknisi($id)
 {
-    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])->get();
+    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])
+        ->where('id_barang_inventaris', $id)
+        ->orderBy('created_at', 'desc') // Order by created_at in descending order
+        ->get();
 
     if ($dataPemeliharaan->isEmpty()) {
         return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
@@ -207,6 +210,7 @@ class PemeliharaanController extends Controller
         $dataPemeliharaan->id_barang_inventaris = $request->id_barang_inventaris;
         $dataPemeliharaan->tanggal = now();
         $dataPemeliharaan->catatan = $request->catatan;
+        $dataPemeliharaan->pembuat_user = $request->pembuat_user;
         $dataPemeliharaan->save();
 
 
