@@ -71,9 +71,34 @@ class PemeliharaanController extends Controller
         }
     }
 
+    public function getData()
+    {
+        // Get the latest 5 pemeliharaan data based on created_at timestamp
+        $latestPemeliharaan = Pemeliharaan::orderBy('created_at', 'desc')->take(5)->get();
+
+        if ($latestPemeliharaan->isEmpty()) {
+            return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
+        }
+
+        // You can customize the data format as needed
+        $formattedData = $latestPemeliharaan->map(function ($pemeliharaan) {
+            return [
+                'id' => $pemeliharaan->id,
+                'nama_barang' => $pemeliharaan->barang_inventaris->nama,
+                'tanggal' => $pemeliharaan->tanggal,
+                // Add more fields if needed
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+
+
     public function indexTeknisi()
 {
-    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])->get();
+    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])
+        ->orderBy('created_at', 'desc') // Order by created_at in descending order
+        ->get();
 
     if ($dataPemeliharaan->isEmpty()) {
         return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
@@ -96,6 +121,7 @@ class PemeliharaanController extends Controller
         return response()->json($formattedData);
     }
 }
+
 
 
     /**
