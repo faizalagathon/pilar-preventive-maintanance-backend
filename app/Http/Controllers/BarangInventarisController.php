@@ -8,6 +8,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\BarangInventaris;
 use App\Http\Requests\BarangInventarisRequest;
 use App\Http\Resources\BarangInventarisResource;
+use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class BarangInventarisController extends Controller
@@ -110,6 +111,32 @@ class BarangInventarisController extends Controller
             return response()->json($dataBarangInventaris);
         }
     }
+
+    public function getData($id){
+        $getDataBarang = BarangInventaris::with(["pemeliharaan", "kategori_pemeliharaan"])->find($id);
+
+        if (!$getDataBarang) {
+            return response()->json(['error' => 'Data Pemeliharaan not found'], 404);
+        }
+
+        $formattedData = [
+            'id' => $getDataBarang->id,
+            'nama_kategori' => $getDataBarang->kategori_pemeliharaan->nama, // Add this to get the category name
+            'nama_barang' => $getDataBarang->nama,
+            'created_at' => Carbon::parse($getDataBarang->created_at)->format('Y-m-d'),
+            'updated_at' => Carbon::parse($getDataBarang->updated_at)->format('Y-m-d'),
+            'pemeliharaan' => $getDataBarang->pemeliharaan->map(function ($pemeliharaan) {
+                return [
+                    'id_pemeliharaan' => $pemeliharaan->id,
+                    'tanggal' => $pemeliharaan->tanggal,
+                ];
+            })->toArray(),
+        ];
+
+        return response()->json($formattedData);
+    }
+
+
 
     public function update(BarangInventarisRequest $request, $id)
     {

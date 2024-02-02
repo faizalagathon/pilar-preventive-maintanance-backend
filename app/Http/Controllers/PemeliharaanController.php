@@ -11,6 +11,8 @@ use App\Models\DaftarPemeliharaan;
 use App\Models\GambarPemeliharaan;
 use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Resources\PemeliharaanResource;
+use App\Models\BarangInventaris;
+use App\Models\KegiatanPemeliharaan;
 use Illuminate\Support\Facades\DB;
 
 // use Illuminate\Support\Facades\Storage;
@@ -69,12 +71,32 @@ class PemeliharaanController extends Controller
         }
     }
 
-    public function indexTeknisi($idBarang)
+    public function getData()
+    {
+        // Get the latest 5 pemeliharaan data based on created_at timestamp
+        $latestPemeliharaan = Pemeliharaan::orderBy('created_at', 'desc')->take(5)->get();
+
+        if ($latestPemeliharaan->isEmpty()) {
+            return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
+        }
+
+        // You can customize the data format as needed
+        $formattedData = $latestPemeliharaan->map(function ($pemeliharaan) {
+            return [
+                'id' => $pemeliharaan->id,
+                'nama_barang' => $pemeliharaan->barang_inventaris->nama,
+                'tanggal' => $pemeliharaan->tanggal,
+                // Add more fields if needed
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+
+
+    public function indexTeknisi($id)
 {
-    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])
-    ->orderByDesc('tanggal')
-    ->where('id_barang_inventaris', $idBarang)
-    ->get();
+    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])->get();
 
     if ($dataPemeliharaan->isEmpty()) {
         return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
@@ -97,6 +119,7 @@ class PemeliharaanController extends Controller
         return response()->json($formattedData);
     }
 }
+
 
 
     /**
@@ -184,6 +207,7 @@ class PemeliharaanController extends Controller
         $dataPemeliharaan->id_barang_inventaris = $request->id_barang_inventaris;
         $dataPemeliharaan->tanggal = now();
         $dataPemeliharaan->catatan = $request->catatan;
+        $dataPemeliharaan->pembuat_user = $request->pembuat_user;
         $dataPemeliharaan->save();
 
 
