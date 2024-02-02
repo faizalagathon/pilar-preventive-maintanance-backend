@@ -141,7 +141,7 @@ class BarangInventarisController extends Controller
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
         // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
-        $namaHost = '10.10.10.155'; /* Nanti tinggal diganti aja */
+        $namaHost = '192.168.165.34'; /* Nanti tinggal diganti aja */
         $port = ':5173';
 
         // Generate QR code data (customize based on your requirements)
