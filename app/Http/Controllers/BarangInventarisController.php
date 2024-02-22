@@ -81,7 +81,7 @@ class BarangInventarisController extends Controller
         $dataBarangInventaris->nama = $request->nama;
         $dataBarangInventaris->save();
 
-        $this->generateQrCode($uuidBarangInventaris);
+        $this->generateQrCode($uuidBarangInventaris, $request->nama_host);
 
         return response()->json(['messages' => 'Barang Inventaris berhasil di tambahkan']);
     }
@@ -112,7 +112,8 @@ class BarangInventarisController extends Controller
         }
     }
 
-    public function getData($id){
+    public function getData($id)
+    {
         $getDataBarang = BarangInventaris::with(["pemeliharaan", "kategori_pemeliharaan"])->find($id);
 
         if (!$getDataBarang) {
@@ -163,12 +164,14 @@ class BarangInventarisController extends Controller
         }
     }
 
-    private function generateQrCode($uuidBarangInventaris)
+    private function generateQrCode($uuidBarangInventaris, $namaHost)
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
         // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
-        $namaHost = '192.168.93.34'; /* Nanti tinggal diganti aja */
+        if ($namaHost === 'localhost')
+            return $namaHost = '127.0.0.1';
+        // $namaHost = '192.168.93.34'; /* Nanti tinggal diganti aja */
         $port = ':5173';
 
         // Generate QR code data (customize based on your requirements)
