@@ -8,6 +8,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\BarangInventaris;
 use App\Http\Requests\BarangInventarisRequest;
 use App\Http\Resources\BarangInventarisResource;
+use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class BarangInventarisController extends Controller
@@ -80,7 +81,7 @@ class BarangInventarisController extends Controller
         $dataBarangInventaris->nama = $request->nama;
         $dataBarangInventaris->save();
 
-        $this->generateQrCode($uuidBarangInventaris);
+        $this->generateQrCode($uuidBarangInventaris, $request->nama_host);
 
         return response()->json(['messages' => 'Barang Inventaris berhasil di tambahkan']);
     }
@@ -111,6 +112,33 @@ class BarangInventarisController extends Controller
         }
     }
 
+    public function getData($id)
+    {
+        $getDataBarang = BarangInventaris::with(["pemeliharaan", "kategori_pemeliharaan"])->find($id);
+
+        if (!$getDataBarang) {
+            return response()->json(['error' => 'Data Pemeliharaan not found'], 404);
+        }
+
+        $formattedData = [
+            'id' => $getDataBarang->id,
+            'nama_kategori' => $getDataBarang->kategori_pemeliharaan->nama, // Add this to get the category name
+            'nama_barang' => $getDataBarang->nama,
+            'created_at' => Carbon::parse($getDataBarang->created_at)->format('Y-m-d'),
+            'updated_at' => Carbon::parse($getDataBarang->updated_at)->format('Y-m-d'),
+            'pemeliharaan' => $getDataBarang->pemeliharaan->map(function ($pemeliharaan) {
+                return [
+                    'id_pemeliharaan' => $pemeliharaan->id,
+                    'tanggal' => $pemeliharaan->tanggal,
+                ];
+            })->toArray(),
+        ];
+
+        return response()->json($formattedData);
+    }
+
+
+
     public function update(BarangInventarisRequest $request, $id)
     {
         $dataBarangInventaris = BarangInventaris::where('id', $id)->first();
@@ -136,12 +164,14 @@ class BarangInventarisController extends Controller
         }
     }
 
-    private function generateQrCode($uuidBarangInventaris)
+    private function generateQrCode($uuidBarangInventaris, $namaHost)
     {
         // $uuidBarangInventaris = '0eb9391c-4a63-421c-857b-84e3827ff987';
 
         // $namaHost = '127.0.0.1'; /* Nanti tinggal diganti aja */
-        $namaHost = '10.10.10.155'; /* Nanti tinggal diganti aja */
+        if ($namaHost === 'localhost')
+            return $namaHost = '127.0.0.1';
+        // $namaHost = '192.168.93.34'; /* Nanti tinggal diganti aja */
         $port = ':5173';
 
         // Generate QR code data (customize based on your requirements)

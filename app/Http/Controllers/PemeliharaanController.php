@@ -59,10 +59,10 @@ class PemeliharaanController extends Controller
         if ($dataPemeliharaan->isEmpty()) {
             return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
         } else {
-            $dataPemeliharaan = $dataPemeliharaan->map(function($pemeliharaan){
-                return[
+            $dataPemeliharaan = $dataPemeliharaan->map(function ($pemeliharaan) {
+                return [
                     'id' => $pemeliharaan->id,
-                    'nama_barang'=>$pemeliharaan->barang_inventaris->nama,
+                    'nama_barang' => $pemeliharaan->barang_inventaris->nama,
                     'tanggal' => $pemeliharaan->tanggal
                 ];
             });
@@ -95,33 +95,38 @@ class PemeliharaanController extends Controller
 
 
     public function indexTeknisi($id)
-{
-    $dataPemeliharaan = Pemeliharaan::with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])
-        ->where('id_barang_inventaris', $id)
-        ->orderBy('created_at', 'desc') // Order by created_at in descending order
-        ->get();
+    {
+        $dataPemeliharaan = Pemeliharaan::where('id_barang_inventaris', $id)
+            ->with(['barang_inventaris', 'daftar_pemeliharaan.kegiatan_pemeliharaan'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    if ($dataPemeliharaan->isEmpty()) {
-        return response()->json(['messages' => 'Tidak terdapat data Pemeliharaan']);
-    } else {
-        $formattedData = $dataPemeliharaan->map(function ($pemeliharaan) {
-            $namaKegiatan = $pemeliharaan->daftar_pemeliharaan->map(function ($item) {
-                return [
-                    'kegiatan' => $item->kegiatan_pemeliharaan->nama_kegiatan,
+        if ($dataPemeliharaan->isEmpty()) {
+            return response()->json(['status' => false, 'messages' => 'Tidak terdapat data Pemeliharaan']);
+        } else {
+            $formattedData =
+                [
+                    'status' => true,
+                    'data' =>
+                        $dataPemeliharaan->map(function ($pemeliharaan) {
+                            $namaKegiatan = $pemeliharaan->daftar_pemeliharaan->map(function ($item) {
+                                return [
+                                    'kegiatan' => $item->kegiatan_pemeliharaan->nama_kegiatan,
+                                ];
+                            });
+
+                            return [
+                                'id_pemeliharaan' => $pemeliharaan->id,
+                                'catatan' => $pemeliharaan->catatan,
+                                'tanggal' => $pemeliharaan->tanggal,
+                                'nama_kegiatan' => $namaKegiatan->toArray(),
+                            ];
+                        }),
                 ];
-            });
 
-            return [
-                'id_pemeliharaan' => $pemeliharaan->id,
-                'catatan' => $pemeliharaan->catatan,
-                'tanggal' => $pemeliharaan->tanggal,
-                'nama_kegiatan' => $namaKegiatan->toArray(),
-            ];
-        });
-
-        return response()->json($formattedData);
+            return response()->json($formattedData);
+        }
     }
-}
 
 
 
@@ -268,7 +273,7 @@ class PemeliharaanController extends Controller
                             'nama_kegiatan' => $daftarPemeliharaan
                                 ->kegiatan_pemeliharaan->nama_kegiatan,
                         ];
-                }),
+                    }),
                 'daftar_gambar' => $dataPemeliharaan
                     ->gambar_pemeliharaan->pluck('gambar'), // Menggunakan pluck untuk mengambil kolom gambar
             ];
