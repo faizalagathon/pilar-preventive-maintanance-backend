@@ -14,6 +14,11 @@ class BidangAllResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'nama' => $this->nama,
+            'kepala_bidang' => $this->user->username,
+            'id_kepala_bidang' => $this->user->id
+        ];
     }
 }

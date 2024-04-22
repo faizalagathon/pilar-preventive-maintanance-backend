@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BidangAllResource;
 use App\Models\Bidang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +18,7 @@ class BidangController extends Controller
         if ($data->isEmpty())
             return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
 
-        return response()->json(['status' => true, 'data' => $data], 404);
+    return response()->json(['status' => true, 'data' => BidangAllResource::collection($data)]);
     }
 
     // Menyimpan resource baru
@@ -29,7 +30,7 @@ class BidangController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'errors' => $validator->errors()]);
+            return response()->json(['status' => false, 'errors' => $validator->errors()], 422);
         }
 
         $bidang = new Bidang($request->all());
@@ -45,7 +46,7 @@ class BidangController extends Controller
         $bidang = Bidang::find($id);
 
         if (!$bidang)
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
 
         return response()->json(['status' => true, 'data' => $bidang], 200);
     }
@@ -56,7 +57,7 @@ class BidangController extends Controller
         $bidang = Bidang::find($id);
 
         if (!$bidang)
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
 
         $validator = Validator::make($request->all(), [
             'id_kepala_bidang' => 'required|string|exists:user,id',
@@ -78,7 +79,7 @@ class BidangController extends Controller
         $bidang = Bidang::find($id);
 
         if (!$bidang)
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan'], 404);
+            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
 
         $bidang->delete();
 
