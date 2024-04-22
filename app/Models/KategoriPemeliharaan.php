@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\BarangInventaris;
 use App\Models\KegiatanPemeliharaan;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,13 +16,18 @@ class KategoriPemeliharaan extends Model
     public $table = 'kategori_pemeliharaan';
     public $keyType = 'string';
     public $incrementing = false;
-    
+
     protected $hidden = [
-        'created_at', 'updated_at'
+        'created_at',
+        'updated_at'
     ];
 
     protected $fillable = [
-        'id', 'nama', 'created_at', 'updated_at'
+        'id',
+        'nama',
+        'id_bidang',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -43,6 +49,16 @@ class KategoriPemeliharaan extends Model
     public function barang_inventaris(): HasMany
     {
         return $this->hasMany(BarangInventaris::class, 'id_kategori_pemeliharaan');
+    }
+
+    /**
+     * Get the bidang that owns the KategoriPemeliharaan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function bidang(): BelongsTo
+    {
+        return $this->belongsTo(Bidang::class, 'id_bidang');
     }
 
 }

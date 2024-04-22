@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('kategori_pemeliharaan', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('id_bidang');
             $table->string('nama', 255);
+
+            $table->foreign('id_bidang')->references('id')->on('bidang')->onDelete('cascade');
             $table->timestamps();
         });
     }
