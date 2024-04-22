@@ -236,7 +236,7 @@ class PemeliharaanController extends Controller
             $dataDaftarPemeliharaan->save();
         }
 
-        return response()->json(['messages' => 'Data Pemeliharaan baru berhasil di tambahkan']);
+        return response()->json(['messages' => 'Data Pemeliharaan baru berhasil di tambahkan'], 201);
     }
 
     /**
